@@ -245,6 +245,15 @@ class BoltzWriter(BasePredictionWriter):
                         / f"pde_{record.id}_model_{idx_to_rank[model_idx]}.npz"
                     )
                     np.savez_compressed(path, pde=pde.cpu().numpy())
+                print("PREDO: ", prediction.keys()) 
+                # Save prob_contact
+                if "prob_contact" in prediction:
+                    prob_contact = prediction["prob_contact"][model_idx]
+                    path = (
+                        struct_dir
+                        / f"contacts_{record.id}_model_{idx_to_rank[model_idx]}.npz"
+                    )
+                    np.savez_compressed(path, prob_contact=prob_contact.cpu().numpy())
                 
             # Save embeddings
             if self.write_embeddings and "s" in prediction and "z" in prediction:

@@ -466,6 +466,7 @@ class ConfidenceHeads(nn.Module):
             plddt_logits=plddt_logits,
             resolved_logits=resolved_logits,
             pde=pde,
+            prob_contact=prob_contact,
             plddt=plddt,
             complex_plddt=complex_plddt,
             complex_iplddt=complex_iplddt,
@@ -474,6 +475,7 @@ class ConfidenceHeads(nn.Module):
         )
         out_dict["pae_logits"] = pae_logits
         out_dict["pae"] = compute_aggregated_metric(pae_logits, end=32)
+        print(prob_contact)
 
         try:
             ptm, iptm, ligand_iptm, protein_iptm, pair_chains_iptm = compute_ptms(
