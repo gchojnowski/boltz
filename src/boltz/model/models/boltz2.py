@@ -1084,7 +1084,7 @@ class Boltz2(LightningModule):
                 # gc:extar stuff
                 pred_dict["prob_contact"] = out["prob_contact"]
                 pred_dict["asym_id"] = out["asym_id"]
-                pred
+                pred_dict["prob_resolved"] = out["prob_resolved"]
                 pred_dict["plddt"] = out["plddt"]
                 pred_dict["confidence_score"] = (
                     4 * out["complex_plddt"]
