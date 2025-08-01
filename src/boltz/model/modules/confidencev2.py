@@ -461,12 +461,17 @@ class ConfidenceHeads(nn.Module):
         complex_ipde = (pde * token_interface_pair_mask).sum(dim=(1, 2)) / (
             token_interface_pair_mask.sum(dim=(1, 2)) + 1e-5
         )
+        # gc:resolved probability
+        prob_resolved = nn.functional.softmax(resolved_logits, dim=-1)
+ 
         out_dict = dict(
             pde_logits=pde_logits,
             plddt_logits=plddt_logits,
             resolved_logits=resolved_logits,
             pde=pde,
             prob_contact=prob_contact,
+            prob_resolved=prob_resolved,
+            asym_id=asym_id,
             plddt=plddt,
             complex_plddt=complex_plddt,
             complex_iplddt=complex_iplddt,

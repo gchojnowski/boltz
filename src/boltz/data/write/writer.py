@@ -254,7 +254,20 @@ class BoltzWriter(BasePredictionWriter):
                         / f"contacts_{record.id}_model_{idx_to_rank[model_idx]}.npz"
                     )
                     np.savez_compressed(path, prob_contact=prob_contact.cpu().numpy())
-                
+               
+                # gc:save some extra data
+                if "prob_resolved" in prediction:
+                    prob_contact = prediction["prob_contact"][model_idx].cpu().numpy()
+                    prob_resolved = prediction["prob_resolved"][model_idx].cpu().numpy()
+                    asym_id = prediction["asym_id"][model_idx].cpu().numpy()
+
+                    path = (
+                            struct_dir
+                            / f"extras_{record.id}_model_{idx_to_rank[model_idx]}.npz"
+                    )
+                    np.savez_compressed(path, prob_contact=prob_contacti, prob_resolved=prob_resolved, asym_id=asym_id)
+
+ 
             # Save embeddings
             if self.write_embeddings and "s" in prediction and "z" in prediction:
                 s = prediction["s"].cpu().numpy()
