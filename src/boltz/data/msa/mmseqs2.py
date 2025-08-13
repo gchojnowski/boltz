@@ -235,6 +235,12 @@ def run_mmseqs2(  # noqa: PLR0912, D103, C901, PLR0915
                         TIME += t
                         pbar.update(n=t)
 
+                    if TIME>2*TIME_ESTIMATE:
+                        msg = (
+                            "MMseqs2 API request takes too long, aborting!"
+                        )
+                        Exception(msg)
+
                 if out["status"] == "COMPLETE":
                     logger.debug(f"MSA job completed successfully for ID: {ID}")
                     if TIME < TIME_ESTIMATE:
