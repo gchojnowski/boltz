@@ -919,6 +919,11 @@ def cli() -> None:
     help="Whether to override existing found predictions. Default is False.",
 )
 @click.option(
+    "--stop_after_msa",
+    is_flag=True,
+    help="Stop after generating MSA and a job dir. Default is False.",
+)
+@click.option(
     "--seed",
     type=int,
     help="Seed to use for random number generator. Default is None (no seeding).",
@@ -1064,6 +1069,7 @@ def predict(  # noqa: C901, PLR0915, PLR0912
     override: bool = False,
     seed: Optional[int] = None,
     use_msa_server: bool = False,
+    stop_after_msa: bool = False,
     msa_server_url: str = "https://api.colabfold.com",
     msa_pairing_strategy: str = "greedy",
     msa_server_username: Optional[str] = None,
@@ -1178,6 +1184,10 @@ def predict(  # noqa: C901, PLR0915, PLR0912
         preprocessing_threads=preprocessing_threads,
         max_msa_seqs=max_msa_seqs,
     )
+    # STOP here if --stop_after_msa
+    if stop_after_msa:
+        click.echo("stop_after_msa: MSA ready, finishing.")
+        return
 
     # Load manifest
     manifest = Manifest.load(out_dir / "processed" / "manifest.json")
