@@ -222,7 +222,7 @@ def run_mmseqs2(  # noqa: PLR0912, D103, C901, PLR0915
                     raise Exception(msg)
 
                 # wait for job to finish
-                ID, TIME, PENDTIME = out["id"], 0, 0
+                ID, TIME = out["id"], 0
                 logger.debug(f"MSA job submitted successfully with ID: {ID}")
                 pbar.set_description(out["status"])
                 while out["status"] in ["UNKNOWN", "RUNNING", "PENDING"]:
@@ -231,15 +231,13 @@ def run_mmseqs2(  # noqa: PLR0912, D103, C901, PLR0915
                     time.sleep(t)
                     out = status(ID)
                     pbar.set_description(out["status"])
-                    if out["status"] == "RUNNING":
+                    if out["status"] in ["PENDING", "RUNNING"]:
                         TIME += t
                         pbar.update(n=t)
 
-                    if out["status"] == "PENDING":
-                        PENDTIME+=t
-                        if PENDTIME>2*TIME_ESTIMATE:
+                        if TIME>2*TIME_ESTIMATE:
                             msg = (
-                                "MMseqs2 API request takes too long, aborting!"
+                                "MMseqs2 API request takes to too long, aborting!"
                             )
                             Exception(msg)
 
