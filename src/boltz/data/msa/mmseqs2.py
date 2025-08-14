@@ -239,7 +239,7 @@ def run_mmseqs2(  # noqa: PLR0912, D103, C901, PLR0915
                             msg = (
                                 "MMseqs2 API request takes to too long, aborting!"
                             )
-                            Exception(msg)
+                            raise Exception(msg)
 
                 if out["status"] == "COMPLETE":
                     logger.debug(f"MSA job completed successfully for ID: {ID}")
