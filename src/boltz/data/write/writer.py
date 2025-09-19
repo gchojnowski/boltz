@@ -256,7 +256,7 @@ class BoltzWriter(BasePredictionWriter):
                             struct_dir
                             / f"extras_{record.id}_model_{idx_to_rank[model_idx]}.npz"
                     )
-                    np.savez_compressed(path, prob_contact=prob_contact, prob_resolved=prob_resolved, asym_id=asym_id)
+                    np.savez_compressed(path, prob_contact=prob_contact, prob_resolved=prob_resolved, asym_id=asym_id, plddt=plddts)
 
  
             # Save embeddings
