@@ -258,7 +258,22 @@ class BoltzWriter(BasePredictionWriter):
                     )
                     np.savez_compressed(path, prob_contact=prob_contact, prob_resolved=prob_resolved, asym_id=asym_id, plddt=plddts.cpu().numpy())
 
- 
+                    # save contacts
+                    requested_contacts=[]
+                    resi_i,resi_j = np.where(prob_contact>0.5)
+                    for i,j in zip(resi_i, resi_j):
+                        ci = int(asym_id[i])
+                        cj = int(asym_id[j])
+                        if ci==cj: continue
+                        #print(i, chain_info[ci].chain_name, j, chain_info[cj].chain_name, prob_contact[i,j])
+                        requested_contacts.append([(int(i),chain_info[ci].chain_name), (int(j),chain_info[cj].chain_name),  float(prob_contact[i,j])])
+
+                    path = ( struct_dir / f"contacts_{record.id}_model_{idx_to_rank[model_idx]}.json" )
+                    print(f"GC:DEBUG: Saving {path} with {len(requested_contacts)} contacts")
+                    with Path(path).open('w') as ofile:
+                        ofile.write(json.dumps(requested_contacts))
+
+
             # Save embeddings
             if self.write_embeddings and "s" in prediction and "z" in prediction:
                 s = prediction["s"].cpu().numpy()
