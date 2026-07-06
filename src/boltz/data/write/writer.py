@@ -145,7 +145,7 @@ class BoltzWriter(BasePredictionWriter):
                         valid=True,
                     )
                     chain_info.append(new_chain_info)
-
+                print(chain_info)
                 # Save the structure
                 struct_dir = self.output_dir / record.id
                 struct_dir.mkdir(exist_ok=True)
@@ -248,9 +248,15 @@ class BoltzWriter(BasePredictionWriter):
 
                 # gc:save some extra data
                 if "prob_resolved" in prediction:
+
                     prob_contact = prediction["prob_contact"][model_idx].cpu().numpy()
                     prob_resolved = prediction["prob_resolved"][model_idx].cpu().numpy()
                     asym_id = prediction["asym_id"][model_idx].cpu().numpy()
+
+                    chain_lens = []
+                    for aid in sorted(set(asym_id)):
+                        chain_lens.append( list(asym_id).count(aid))
+
 
                     path = (
                             struct_dir
@@ -260,13 +266,17 @@ class BoltzWriter(BasePredictionWriter):
 
                     # save contacts
                     requested_contacts=[]
-                    resi_i,resi_j = np.where(prob_contact>0.5)
+                    resi_i,resi_j = np.where(prob_contact>0.8)
                     for i,j in zip(resi_i, resi_j):
                         ci = int(asym_id[i])
                         cj = int(asym_id[j])
-                        if ci==cj: continue
-                        #print(i, chain_info[ci].chain_name, j, chain_info[cj].chain_name, prob_contact[i,j])
-                        requested_contacts.append([(int(i),chain_info[ci].chain_name), (int(j),chain_info[cj].chain_name),  float(prob_contact[i,j])])
+                        if ci>=cj: continue
+
+                        reli = 1+i-sum(chain_lens[:ci])
+                        relj = 1+j-sum(chain_lens[:cj])
+
+                        print(reli, chain_info[ci].chain_name, relj, chain_info[cj].chain_name, prob_contact[i,j])
+                        requested_contacts.append([(int(reli),chain_info[ci].chain_name), (int(relj),chain_info[cj].chain_name),  float(prob_contact[i,j])])
 
                     path = ( struct_dir / f"contacts_{record.id}_model_{idx_to_rank[model_idx]}.json" )
                     print(f"GC:DEBUG: Saving {path} with {len(requested_contacts)} contacts")
