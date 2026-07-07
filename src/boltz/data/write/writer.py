@@ -2,6 +2,7 @@ import json
 from dataclasses import asdict, replace
 from pathlib import Path
 from typing import Literal
+import pickle
 
 import numpy as np
 import torch
@@ -252,7 +253,10 @@ class BoltzWriter(BasePredictionWriter):
                     prob_contact = prediction["prob_contact"][model_idx].cpu().numpy()
                     prob_resolved = prediction["prob_resolved"][model_idx].cpu().numpy()
                     asym_id = prediction["asym_id"][model_idx].cpu().numpy()
-
+    
+                    import string
+                    chain_ids = string.ascii_uppercase
+    
                     chain_lens = []
                     for aid in sorted(set(asym_id)):
                         chain_lens.append( list(asym_id).count(aid))
@@ -264,6 +268,12 @@ class BoltzWriter(BasePredictionWriter):
                     )
                     np.savez_compressed(path, prob_contact=prob_contact, prob_resolved=prob_resolved, asym_id=asym_id, plddt=plddts.cpu().numpy())
 
+                    # save flattened distogram
+                    output_dict = {'below8pbty':below8pbty, 'chain_lens':chain_lens, 'asym_id':asym_id, 'chain_ids':chain_ids}
+                    out_fn = struct_dir / f"flat_distogram.pkl"
+                    with open(out_fn, "wb") as f:
+                        pickle.dump(output_dict, f)
+        
                     # save contacts
                     requested_contacts=[]
                     resi_i,resi_j = np.where(prob_contact>0.8)
