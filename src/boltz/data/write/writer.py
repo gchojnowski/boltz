@@ -268,8 +268,9 @@ class BoltzWriter(BasePredictionWriter):
                     )
                     np.savez_compressed(path, prob_contact=prob_contact, prob_resolved=prob_resolved, asym_id=asym_id, plddt=plddts.cpu().numpy())
 
+
                     # save flattened distogram
-                    output_dict = {'below8pbty':below8pbty, 'chain_lens':chain_lens, 'asym_id':asym_id, 'chain_ids':chain_ids}
+                    output_dict = {'below8pbty':prob_contact, 'chain_lens':chain_lens, 'asym_id':asym_id, 'chain_ids':chain_ids}
                     out_fn = struct_dir / f"flat_distogram.pkl"
                     with open(out_fn, "wb") as f:
                         pickle.dump(output_dict, f)
